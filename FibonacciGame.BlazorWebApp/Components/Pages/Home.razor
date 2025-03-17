@@ -1,0 +1,36 @@
+﻿@page "/"
+
+<h1>Welcome to the Fibonacci Grid Game</h1>
+
+<div class="rules-container">
+    <h4>How to Play</h4>
+
+    <div class="mb-4">
+        <ul>
+            <li>The game consists of a <strong>50x50 grid</strong></li>
+            <li>Clicking on a cell <strong>increases all cells</strong> in the same row and column by <strong>+1</strong></li>
+            <li>If a cell was empty, it will be set to <strong>1</strong></li>
+            <li>Cells are highlighted in <span class="yellow">yellow</span> when updated</li>
+        </ul>
+    </div>
+
+    <h4>Winning Condition</h4>
+
+    <div class="mb-4">
+        <ul>
+            <li>If <strong>five consecutive Fibonacci numbers</strong> appear in a row or column, those cells are cleared</li>
+            <li>The cleared cells briefly highlight in <span class="green">green</span> before resetting</li>
+            <li>You can play as long as you want, there is no losing condition</li>
+        </ul>
+    </div>
+
+    <h4>Controls</h4>
+    <ul>
+        <li>Click on any cell to increase the numbers</li>
+        <li>Press the <strong>Reset Grid</strong> button to restart the game</li>
+    </ul>
+
+    <div class="start-button">
+        <a href="/game" class="btn btn-primary">Start Playing</a>
+    </div>
+</div>

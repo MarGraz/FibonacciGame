@@ -1,0 +1,85 @@
+﻿@page "/game"
+@using Microsoft.Extensions.Options
+@using FibonacciGame.BusinessLogic.Interfaces
+@using FibonacciGame.Common.Configurations
+@inject IGameService GameService
+@inject IConfiguration Configuration
+@inject IOptions<GridConfig> GridOptions
+
+
+<h3 class="mb-4">Fibonacci Grid Game</h3>
+
+<button class="btn btn-primary mb-2" @onclick="ResetGrid">Reset Grid</button>
+
+<table class="grid">
+    <tbody>
+        @for (int row = 0; row < gridSize; row++)
+        {
+            <tr>
+                @for (int col = 0; col < gridSize; col++)
+                {
+                    int rowLocal = row; // to store the positioning of the cell, and make Blazor using it
+                    int colLocal = col;
+
+                    <td @onclick="@( () => ClickCellAsync(rowLocal, colLocal) )" class="@GetCellClass(row, col)">
+                        @grid[row, col]
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private int gridSize;
+    private int[,]? grid;
+    private HashSet<(int, int)> cellsToHighlightGreen = new();
+
+    protected override void OnInitialized()
+    {
+        gridSize = GridOptions.Value.GridSize;
+        grid = GameService.GetGrid();
+    }
+
+    private async Task ClickCellAsync(int row, int col)
+    {
+        var cellsToClear = GameService.ClickCell(row, col);
+
+        // Update grid
+        grid = GameService.GetGrid();
+        cellsToHighlightGreen = new HashSet<(int, int)>(cellsToClear);
+        StateHasChanged(); // Update UI
+
+        if (cellsToClear.Count > 0)
+        {
+            // Wait to show the green color in case of a match
+            await Task.Delay(800);
+
+            // Set to 0 all the cells where there is a match
+            foreach (var (ro, co) in cellsToClear)
+            {
+                grid[ro, co] = 0;
+            }
+
+            // Reset the green background
+            cellsToHighlightGreen.Clear();
+            StateHasChanged(); // Update UI
+        }
+    }
+
+    private void ResetGrid()
+    {
+        GameService.ResetGame();
+        grid = GameService.GetGrid();
+        StateHasChanged(); // Update UI
+    }
+
+    private string GetCellClass(int row, int col)
+    {
+        if (cellsToHighlightGreen.Contains((row, col)))
+        {
+            return "highlighted-cell"; // Add green background
+        }
+        return grid[row, col] > 0 ? "active-cell" : "";
+    }
+}
